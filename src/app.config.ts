@@ -31,8 +31,8 @@ export default {
   },
   window: {
     backgroundTextStyle: 'light',
-    navigationBarBackgroundColor: '#fff',
-    // navigationBarTitleText: '碳迹',
-    navigationBarTextStyle: 'black'
+    navigationBarBackgroundColor: '#f7f7f7',
+    navigationBarTextStyle: 'black',
+    backgroundColor: '#f7f7f7'
   }
 }

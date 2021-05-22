@@ -2,6 +2,7 @@ import { Component } from 'react'
 import { connect } from 'react-redux'
 import Taro, { getCurrentInstance } from "@tarojs/taro";
 import { View, Button, Text } from '@tarojs/components'
+import { AtDivider, AtCard, AtList, AtListItem } from "taro-ui"
 
 import { add, minus } from '../../actions/counter'
 import { Counter } from "../../constants/types";
@@ -59,21 +60,33 @@ class Index extends Component<PageStateProps, PageState> {
   render() {
     return (
       <View className='index'>
-        <Button className='add_btn' onClick={this.props.add}>+</Button>
-        <Button className='dec_btn' onClick={this.props.dec}>-</Button>
-        <View><Text>{this.props.counter.num}</Text></View>
+        <AtDivider lineColor="#f7f7f7" height="12"></AtDivider>
+        <View>
+          <AtCard
+            note='累计碳排放 999 Kg'
+            // extra='额外信息'
+            title='本月记录'
+          >
+            <Button>hi!</Button>
+          </AtCard>
+        </View>
+        <AtDivider lineColor="#f7f7f7" height="12"></AtDivider>
+        <View>
+          <AtCard
+            // note='累计碳排放 999 Kg'
+            // extra='额外信息'
+            title='记录'
+          >
+            <AtList>
+              <AtListItem title='标题文字' />
+              <AtListItem title='标题文字' arrow='right' />
+              <AtListItem title='标题文字' extraText='详细信息' />
+              <AtListItem title='禁用状态' disabled extraText='详细信息' />
+            </AtList>
+          </AtCard>
 
-        {/* 
-        <AtTabBar
-          fixed
-          selectedColor="#d43c33"
-          tabList={[
-            { title: "碳迹", iconType: "loading-2" },
-            { title: "记录", iconType: "add" },
-            { title: "我的", iconType: "user" }
-          ]}
-        /> */}
-      </View>
+        </View>
+      </View >
     )
   }
 }
