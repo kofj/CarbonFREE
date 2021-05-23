@@ -1,0 +1,24 @@
+{
+  "setting": {},
+  "condition": {
+    "plugin": {
+      "list": []
+    },
+    "game": {
+      "list": []
+    },
+    "gamePlugin": {
+      "list": []
+    },
+    "miniprogram": {
+      "list": [
+        {
+          "name": "pages/record/record",
+          "pathName": "pages/record/record",
+          "query": "debug=true&$mode=1",
+          "scene": null
+        }
+      ]
+    }
+  }
+}

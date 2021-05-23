@@ -5,6 +5,7 @@ import { UserState } from '../../constants/types'
 import { update_userinfo, update_auth_tips } from '../../actions/user'
 
 type AuthorizedProps = {
+  debug: boolean;
   user: UserState,
   children?: JSX.Element | any,
   update_userinfo(user: UserState): void,
@@ -15,6 +16,7 @@ class Authorized extends Component<AuthorizedProps> {
   constructor(props) {
     super(props);
   }
+
   getUserProfile = () => {
     this.props.update_auth_tips("获取授权中");
     wx.getUserProfile({
@@ -38,7 +40,7 @@ class Authorized extends Component<AuthorizedProps> {
   }
 
   render() {
-    if (this.props.user.isAuthorized) {
+    if (this.props.user.isAuthorized || this.props.debug) {
       return (
         React.createElement(
           View, {}, this.props?.children
