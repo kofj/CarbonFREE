@@ -2,6 +2,7 @@ import {
   UPDATE_OPENID,
   UPDATE_USERINFO
 } from '../constants/user'
+import { UserState } from "../constants/types";
 
 export const update_openid = (payload: string) => {
   return {
@@ -9,10 +10,10 @@ export const update_openid = (payload: string) => {
     payload
   }
 }
-export const update_userinfo = (payload: any) => {
+export const update_userinfo = (userState: UserState) => {
   return {
     type: UPDATE_USERINFO,
-    payload
+    payload: userState
   }
 }
 

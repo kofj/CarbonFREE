@@ -22,7 +22,6 @@ export default {
       },
       {
         pagePath: 'pages/mine/mine',
-        iconSize: 64,
         iconPath: 'assets/user.png',
         selectedIconPath: 'assets/on/user.png',
         text: '我的'

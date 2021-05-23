@@ -3,12 +3,9 @@ import { UserState } from "../constants/types";
 
 
 const userInitState: UserState = {
-  login: false,
+  isAuthorized: false,
   openId: "",
-  userInfo: {
-    avatarUrl: "",
-    nickName: "",
-  }
+  userInfo: undefined
 }
 
 export default function user(state = userInitState, action: any) {
@@ -16,7 +13,7 @@ export default function user(state = userInitState, action: any) {
     case UPDATE_OPENID:
       return { ...state, openId: action.payload }
     case UPDATE_USERINFO:
-      return { ...state, userInfo: action.payload }
+      return { ...state, ...action.payload }
 
     default:
       return state

@@ -1,9 +1,13 @@
 export interface UserState {
-  login: false,
-  openId: "",
-  userInfo: {
-    avatarUrl: "",
-    nickName: "",
+  isAuthorized?: boolean,
+  openId?: string,
+  cloudId?: string,
+  userInfo?: {
+    avatarUrl: string,
+    nickName: string,
+    province: string,
+    city: string,
+    gender: number,
   }
 }
 
