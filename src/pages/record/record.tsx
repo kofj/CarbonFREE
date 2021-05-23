@@ -1,6 +1,7 @@
 import { Component } from 'react'
 import { View, Text } from '@tarojs/components'
-import Taro, { getCurrentInstance } from "@tarojs/taro";
+import Taro from "@tarojs/taro";
+import Auth from "../../components/Auth/Auth";
 
 import "taro-ui/dist/style/components/button.scss" // 按需引入
 import './record.scss'
@@ -32,7 +33,9 @@ export default class Record extends Component<{}, PageState> {
   render() {
     return (
       <View className='record'>
-        <Text>Record</Text>
+        <Auth>
+          <Text>Record</Text>
+        </Auth>
       </View>
     )
   }

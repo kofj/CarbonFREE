@@ -1,4 +1,4 @@
 
-export const UPDATE_OPENID = 'UPDATE_OPENID'
+export const UPDATE_AUTH_TIPS = 'UPDATE_AUTH_TIPS'
 export const UPDATE_USERINFO = 'UPDATE_USERINFO'
 

@@ -1,11 +1,10 @@
 import { Component } from 'react'
 import { View, Text } from '@tarojs/components'
 import Taro, { } from "@tarojs/taro";
+import Auth from "../../components/Auth/Auth";
 
 import "taro-ui/dist/style/components/button.scss" // 按需引入
 import './mine.scss'
-
-
 
 type PageState = {
 }
@@ -34,7 +33,10 @@ export default class Mine extends Component<{}, PageState> {
   render() {
     return (
       <View className='mine'>
-        <Text>Mine</Text>
+        <Auth>
+          Hi!
+          <Text>Mine</Text>
+        </Auth>
       </View>
     )
   }

@@ -1,4 +1,5 @@
 export interface UserState {
+  tips?: string,
   isAuthorized?: boolean,
   openId?: string,
   cloudId?: string,

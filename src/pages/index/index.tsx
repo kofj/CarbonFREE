@@ -8,6 +8,7 @@ import { add, minus } from '../../actions/counter'
 import { Counter, UserState } from "../../constants/types";
 import { update_userinfo } from "../../actions/user";
 import { Card } from "../../components/Card/card";
+import Auth from "../../components/Auth/Auth";
 
 import './index.scss'
 
@@ -54,7 +55,6 @@ class Index extends Component<PageStateProps, PageState> {
       desc: "授权登录"
     }).then(resp => {
       console.log("getUserProfile", resp, this.props)
-      console.log("getUserProfile", resp, this.props)
       wx.getUserInfo({})
       let info = resp.userInfo
       if (info) {
@@ -73,14 +73,7 @@ class Index extends Component<PageStateProps, PageState> {
   render() {
     return (
       <View className='index' >
-        {!this.props.user.isAuthorized &&
-          <View className="login">
-            <Button onClick={this.getUserProfile}>授权登录</Button>
-            <Text>{this.state.deny}</Text>
-          </View>
-        }
-        {
-          this.props.user.isAuthorized &&
+        <Auth>
           <View>
             <View className="userinfo">
               <AtAvatar circle={true}
@@ -91,7 +84,9 @@ class Index extends Component<PageStateProps, PageState> {
 
             <AtDivider lineColor="#f7f7f7" height="12rpx"></AtDivider>
 
-            <Card title="卡片"></Card>
+            <Card title="卡片">
+              <Text>Hi!</Text>
+            </Card>
 
             <View>
               <AtCard
@@ -120,7 +115,17 @@ class Index extends Component<PageStateProps, PageState> {
 
             </View>
           </View>
+        </Auth>
+        {/* {!this.props.user.isAuthorized &&
+          <View className="login">
+            <Button onClick={this.getUserProfile}>授权登录</Button>
+            <Text>{this.state.deny}</Text>
+          </View>
         }
+        {
+          this.props.user.isAuthorized &&
+
+        } */}
       </View >
     )
   }

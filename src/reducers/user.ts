@@ -1,4 +1,4 @@
-import { UPDATE_OPENID, UPDATE_USERINFO } from '../constants/user'
+import { UPDATE_AUTH_TIPS, UPDATE_USERINFO } from '../constants/user'
 import { UserState } from "../constants/types";
 
 
@@ -10,8 +10,8 @@ const userInitState: UserState = {
 
 export default function user(state = userInitState, action: any) {
   switch (action.type) {
-    case UPDATE_OPENID:
-      return { ...state, openId: action.payload }
+    case UPDATE_AUTH_TIPS:
+      return { ...state, tips: action.payload }
     case UPDATE_USERINFO:
       return { ...state, ...action.payload }
 
