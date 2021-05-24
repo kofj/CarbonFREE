@@ -3,6 +3,7 @@ import { View, Text, Picker } from '@tarojs/components'
 import Taro, { getCurrentInstance } from "@tarojs/taro";
 import Auth from "../../components/Auth/Auth";
 import { AtDivider, AtForm, AtInput, AtButton, AtList, AtListItem, AtSegmentedControl } from 'taro-ui'
+import { getData } from "../../global";
 
 import './record.scss'
 
@@ -45,7 +46,17 @@ export default class Record extends Component<{}, PageState> {
 
   componentWillUnmount() { }
 
-  componentDidShow() { }
+  componentDidShow() {
+    let group = getData("shortcut_group")
+    console.log("getData shorcut.group", group)
+    if (group) this.setState({ group: group })
+    let action = getData("shortcut_action")
+    console.log("getData shorcut.action", action)
+    if (action) this.setState({ action: action })
+    let note = getData("shortcut_note")
+    console.log("getData shorcut.note", note)
+    if (note) this.setState({ note: note })
+  }
 
   componentDidHide() { }
 

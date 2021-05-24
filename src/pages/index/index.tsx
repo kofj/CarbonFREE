@@ -9,6 +9,7 @@ import { Counter, UserState } from "../../constants/types";
 import { update_userinfo } from "../../actions/user";
 import { Card } from "../../components/Card/card";
 import Auth from "../../components/Auth/Auth";
+import { setData } from "../../global";
 
 import './index.scss'
 
@@ -49,21 +50,35 @@ class Index extends Component<PageStateProps, PageState> {
   }
 
   // custom funcs
-  shortcut = (idx): any => {
-    let url = "";
+  shortcut(idx: number, _: any): any {
+    // wx.switchTab 不能传递 queryString，通过 globalData 传递
+
     switch (idx) {
       case 1:
-        url = "/record/record?shortcut=true&group=0&action=100&note=低碳骑行"
+        setData("shortcut_group", 0)
+        setData("shortcut_action", 100)
+        setData("shortcut_note", "低碳骑行")
         break;
 
-      case 1:
-        url = "/record/record?shortcut=true&group=0&action=200&note=公共出行"
+      case 2:
+        setData("shortcut_group", 0)
+        setData("shortcut_action", 200)
+        setData("shortcut_note", "公共出行")
+        break;
+
+      case 3:
+        setData("shortcut_group", 1)
+        setData("shortcut_action", 400)
+        setData("shortcut_note", "家庭耗电")
         break;
 
       default:
+        setData("shortcut_group", 0)
+        setData("shortcut_action", 100)
+        setData("shortcut_note", "低碳骑行")
         break;
     }
-    Taro.navigateTo({ url: url })
+    wx.switchTab({ url: "../record/record" })
   }
 
   render() {
@@ -78,12 +93,13 @@ class Index extends Component<PageStateProps, PageState> {
               <Text>{this.props.user.userInfo?.nickName}</Text>
             </View>
 
-            <AtDivider lineColor="#f7f7f7" height="12rpx"></AtDivider>
+            <AtDivider lineColor="#f7f7f7" height="16"></AtDivider>
 
             <Card title="快捷记录">
               <View className="shortcut">
-                <AtButton className="green" onClick={this.shortcut(1)}>绿色骑行</AtButton>
-                <AtButton className="green" onClick={this.shortcut(2)}>公交通勤</AtButton>
+                <AtButton className="green" onClick={(e) => { this.shortcut(1, e) }}>绿色骑行</AtButton>
+                <AtButton className="green" onClick={(e) => { this.shortcut(2, e) }}>公交通勤</AtButton>
+                <AtButton className="green" onClick={(e) => { this.shortcut(3, e) }}>家庭耗电</AtButton>
               </View>
             </Card>
 
