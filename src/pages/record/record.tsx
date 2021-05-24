@@ -24,7 +24,7 @@ export default class Record extends Component<{}, PageState> {
     this.state = {
       pageParams: getCurrentInstance()?.router?.params,
       group: 0,
-      action: 0,
+      action: 100,
       value: 0,
       note: "",
       start_date: new Date(),
@@ -59,6 +59,12 @@ export default class Record extends Component<{}, PageState> {
     })
   }
 
+  changeAction = (event) => {
+    let value = this.selector[event.detail.value]?.value;
+    this.setState({ action: value });
+    console.log("changeAction", value, event, this.state);
+  }
+
   onSubmit() { }
   onReset() { }
 
@@ -74,11 +80,19 @@ export default class Record extends Component<{}, PageState> {
     { name: "电动汽车", action: "行驶", value: 700, unit: "公里" },
     { name: "燃油汽车", action: "行驶", value: 800, unit: "公里" },
   ]
-  foundSelector = value => this.selector.find(element => element.value = value);
+  foundSelector = (value: number): any => {
+    return this.selector.find(element => element.value == value);
+  }
 
   render() {
     return (
       <View className='record'>
+        {this.state.pageParams["debug"] &&
+          <View className="code">
+            <Text >{JSON.stringify(this.state)}</Text>
+          </View>
+        }
+
         <Auth debug={this.state.pageParams["debug"]}>
           <AtForm onSubmit={this.onSubmit.bind(this)}
             onReset={this.onReset.bind(this)}>
@@ -89,7 +103,7 @@ export default class Record extends Component<{}, PageState> {
             />
 
             <AtDivider lineColor="#f7f7f7" height="26"></AtDivider>
-            <Picker mode='selector' rangeKey="name" range={this.selector} onChange={e => { this.setState({ action: e.detail.value as number }) }}>
+            <Picker mode='selector' rangeKey="name" range={this.selector} onChange={this.changeAction}>
               <AtList>
                 <AtListItem
                   title='类型'
