@@ -13,9 +13,9 @@
     "miniprogram": {
       "list": [
         {
-          "name": "pages/record/record",
-          "pathName": "pages/record/record",
-          "query": "debug=true&$mode=1",
+          "name": "首页",
+          "pathName": "pages/index/index",
+          "query": "debug=true",
           "scene": null
         },
         {

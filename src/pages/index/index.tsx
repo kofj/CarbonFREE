@@ -1,8 +1,8 @@
 import { Component, } from 'react'
 import { connect } from 'react-redux'
-import Taro from "@tarojs/taro";
+import Taro, { getCurrentInstance } from "@tarojs/taro";
 import { View, Button, Text } from '@tarojs/components'
-import { AtDivider, AtCard, AtList, AtListItem, AtAvatar } from "taro-ui"
+import { AtDivider, AtCard, AtList, AtListItem, AtAvatar, AtButton } from "taro-ui"
 
 import { add, minus } from '../../actions/counter'
 import { Counter, UserState } from "../../constants/types";
@@ -22,14 +22,14 @@ type PageStateProps = {
 }
 
 type PageState = {
-  deny: string
+  pageParams?: any,
 }
 
 class Index extends Component<PageStateProps, PageState> {
   constructor(props) {
     super(props)
     this.state = {
-      deny: ""
+      pageParams: getCurrentInstance()?.router?.params,
     }
   }
 
@@ -49,31 +49,27 @@ class Index extends Component<PageStateProps, PageState> {
   }
 
   // custom funcs
-  getUserProfile = () => {
-    this.setState({ deny: "获取授权中" })
-    wx.getUserProfile({
-      desc: "授权登录"
-    }).then(resp => {
-      console.log("getUserProfile", resp, this.props)
-      wx.getUserInfo({})
-      let info = resp.userInfo
-      if (info) {
-        this.props.update_userinfo({
-          isAuthorized: true,
-          cloudId: resp["cloudID"],
-          userInfo: info
-        })
-      }
-    }).catch(err => {
-      console.log("获取授权失败", err);
-      this.setState({ deny: "授权用户信息并登录后才能使用" });
-    })
+  shortcut = (idx): any => {
+    let url = "";
+    switch (idx) {
+      case 1:
+        url = "/record/record?shortcut=true&group=0&action=100&note=低碳骑行"
+        break;
+
+      case 1:
+        url = "/record/record?shortcut=true&group=0&action=200&note=公共出行"
+        break;
+
+      default:
+        break;
+    }
+    Taro.navigateTo({ url: url })
   }
 
   render() {
     return (
       <View className='index' >
-        <Auth>
+        <Auth debug={this.state.pageParams["debug"]}>
           <View>
             <View className="userinfo">
               <AtAvatar circle={true}
@@ -84,8 +80,11 @@ class Index extends Component<PageStateProps, PageState> {
 
             <AtDivider lineColor="#f7f7f7" height="12rpx"></AtDivider>
 
-            <Card title="卡片">
-              <Text>Hi!</Text>
+            <Card title="快捷记录">
+              <View className="shortcut">
+                <AtButton className="green" onClick={this.shortcut(1)}>绿色骑行</AtButton>
+                <AtButton className="green" onClick={this.shortcut(2)}>公交通勤</AtButton>
+              </View>
             </Card>
 
             <View>
@@ -116,16 +115,7 @@ class Index extends Component<PageStateProps, PageState> {
             </View>
           </View>
         </Auth>
-        {/* {!this.props.user.isAuthorized &&
-          <View className="login">
-            <Button onClick={this.getUserProfile}>授权登录</Button>
-            <Text>{this.state.deny}</Text>
-          </View>
-        }
-        {
-          this.props.user.isAuthorized &&
 
-        } */}
       </View >
     )
   }
