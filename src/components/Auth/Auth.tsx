@@ -5,7 +5,7 @@ import { UserState } from '../../constants/types'
 import { update_userinfo, update_auth_tips } from '../../actions/user'
 
 type AuthorizedProps = {
-  debug: boolean;
+  debug?: boolean;
   user: UserState,
   children?: JSX.Element | any,
   update_userinfo(user: UserState): void,

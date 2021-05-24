@@ -17,6 +17,12 @@
           "pathName": "pages/record/record",
           "query": "debug=true&$mode=1",
           "scene": null
+        },
+        {
+          "name": "低碳骑行-快捷方式",
+          "pathName": "pages/record/record",
+          "query": "debug=true&shortcut=true&group=0&action=100&note=低碳骑行",
+          "scene": null
         }
       ]
     }

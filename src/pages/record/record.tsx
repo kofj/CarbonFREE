@@ -9,7 +9,7 @@ import './record.scss'
 type PageState = {
   pageParams?: any,
   group?: number,
-  type: number,
+  action: number,
   note: string
   value: number
   start_date?: Date,
@@ -24,7 +24,7 @@ export default class Record extends Component<{}, PageState> {
     this.state = {
       pageParams: getCurrentInstance()?.router?.params,
       group: 0,
-      type: 0,
+      action: 0,
       value: 0,
       note: "",
       start_date: new Date(),
@@ -35,7 +35,12 @@ export default class Record extends Component<{}, PageState> {
   componentWillMount() { }
 
   componentDidMount() {
-    console.log("pageParams", this.state.pageParams)
+    let params = this.state.pageParams
+    if (params["shortcut"]) {
+      if (params["group"]) this.setState({ group: parseInt(params["group"]) })
+      if (params["action"]) this.setState({ action: parseInt(params["action"]) })
+      if (params["note"]) this.setState({ note: params["note"] })
+    }
   }
 
   componentWillUnmount() { }
@@ -60,10 +65,17 @@ export default class Record extends Component<{}, PageState> {
   // custom funcs
 
   selector = [
-    { name: "耗电量", value: 100, unit: "度" },
-    { name: "燃气", value: 200, unit: "m³" },
-    { name: "汽油", value: 300, unit: "升" },
+    { name: "自行车", action: "骑行", value: 100, unit: "公里" },
+    { name: "公交/地铁", action: "乘坐", value: 200, unit: "公里" },
+    { name: "电动自行车", action: "行驶", value: 300, unit: "公里" },
+    { name: "电量", action: "使用", value: 400, unit: "度" },
+    { name: "燃气", action: "使用", value: 500, unit: "m³" },
+    { name: "汽油", action: "使用", value: 600, unit: "升" },
+    { name: "电动汽车", action: "行驶", value: 700, unit: "公里" },
+    { name: "燃油汽车", action: "行驶", value: 800, unit: "公里" },
   ]
+  foundSelector = value => this.selector.find(element => element.value = value);
+
   render() {
     return (
       <View className='record'>
@@ -77,11 +89,11 @@ export default class Record extends Component<{}, PageState> {
             />
 
             <AtDivider lineColor="#f7f7f7" height="26"></AtDivider>
-            <Picker mode='selector' rangeKey="name" range={this.selector} onChange={e => { this.setState({ type: e.detail.value as number }) }}>
+            <Picker mode='selector' rangeKey="name" range={this.selector} onChange={e => { this.setState({ action: e.detail.value as number }) }}>
               <AtList>
                 <AtListItem
                   title='类型'
-                  extraText={this.selector[this.state.type].name}
+                  extraText={this.foundSelector(this.state.action)?.name}
                 />
               </AtList>
             </Picker>
@@ -89,13 +101,13 @@ export default class Record extends Component<{}, PageState> {
             <AtInput
               clear
               name='value'
-              title='消耗'
+              title={this.foundSelector(this.state.action)?.action}
               type='digit'
               placeholder='请输入数字'
               value=""
               onChange={_ => { }}
             >
-              <Text className="unit">{this.selector[this.state.type].unit}</Text>
+              <Text className="unit">{this.foundSelector(this.state.action)?.unit}</Text>
             </AtInput>
 
             <AtInput
