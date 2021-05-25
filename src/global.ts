@@ -26,3 +26,12 @@ export const selector = [
 export const findSelector = (value: number): any => {
   return selector.find(element => element.value == value);
 }
+
+export const formatCarbon = (v: number): String => {
+  if (v < 5e5) return `${(v / 1000).toFixed(2)}kg碳`
+  return `${(v / 1e6).toFixed(2)}吨碳`
+}
+
+export const formatYmD = (date: Date): string => {
+  return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`
+}

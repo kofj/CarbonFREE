@@ -13,7 +13,7 @@ import {
   AtToast,
   AtCurtain,
 } from 'taro-ui'
-import { getData, findSelector, selector } from "../../global";
+import { getData, findSelector, selector, formatYmD } from "../../global";
 
 import './record.scss'
 
@@ -186,12 +186,12 @@ export default class Record extends Component<{}, PageState> {
 
             <Picker mode='date' value="" end={this.state.end_date?.toLocaleDateString()} onChange={e => { this.setState({ start_date: new Date(e.detail.value) }) }}>
               <AtList>
-                <AtListItem title='开始日期' extraText={this.state.start_date?.toLocaleDateString()} />
+                <AtListItem title='开始日期' extraText={formatYmD(this.state.start_date)} />
               </AtList>
             </Picker>
             <Picker mode='date' value="" start={this.state.start_date?.toLocaleDateString()} end={new Date().toLocaleDateString()} onChange={e => { this.setState({ end_date: new Date(e.detail.value) }) }}>
               <AtList>
-                <AtListItem title="截止日期" extraText={this.state.end_date?.toLocaleDateString()} />
+                <AtListItem title="截止日期" extraText={formatYmD(this.state.end_date)} />
               </AtList>
             </Picker>
 
