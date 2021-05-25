@@ -5,9 +5,7 @@ import configStore from "./store";
 import AppContainer from "./pages/app/app";
 import { View } from '@tarojs/components'
 
-import "taro-ui/dist/style/index.scss"; // 全局引入一次即可
 import "./app.scss";
-
 const store = configStore();
 
 export default class App extends Component {

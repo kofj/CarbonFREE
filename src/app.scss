@@ -1,3 +1,8 @@
+$color-brand: #19b560 !default;
+$color-brand-light: #53c888 !default;
+$color-brand-dark: #14914d !default;
+@import "~taro-ui/dist/style/index.scss"; // 全局引入一次即可
+
 page {
   background-color: #f7f7f7;
 }

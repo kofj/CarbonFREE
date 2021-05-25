@@ -2,8 +2,6 @@ page .record {
   display: flex;
   flex-direction: column;
   align-items: center;
-  // padding:0 10rpx 0 10rpx;
-  // margin: 10rpx;
   margin-left: 20rpx;
   margin-right: 20rpx;
 }
@@ -13,16 +11,8 @@ Text.unit {
   color: #999;
 }
 
-.at-segmented-control {
-  border-color: #19B560;
-}
 .at-segmented-control__item {
-  color: #19B560;
   padding: 16rpx 10rpx;
-}
-.at-segmented-control__item--active {
-  background-color: #19B560;
-  color: #f7f7f7;
 }
 
 .at-form{
@@ -33,7 +23,3 @@ Text.unit {
   color: #f7f7f7;
   background-color: #19B560;
 }
-
-// .at-divider {
-//   height: 12rpx;
-// }
