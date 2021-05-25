@@ -13,7 +13,7 @@ import {
   AtToast,
   AtCurtain,
 } from 'taro-ui'
-import { getData } from "../../global";
+import { getData, findSelector, selector } from "../../global";
 
 import './record.scss'
 
@@ -75,7 +75,7 @@ export default class Record extends Component<{}, PageState> {
   componentDidHide() { }
 
   changeAction = (event) => {
-    let value = this.selector[event.detail.value]?.value;
+    let value = selector[event.detail.value]?.value;
     this.setState({ action: value });
   }
 
@@ -83,7 +83,7 @@ export default class Record extends Component<{}, PageState> {
     this.setState({ toastIsOpened: true, toastStatus: "loading", toastText: "保存中..." })
     let s = this.state
     if (s.value <= 0) {
-      this.setState({ toastIsOpened: true, toastStatus: "error", toastText: `请填写${this.foundSelector(this.state.action).action}数值`, })
+      this.setState({ toastIsOpened: true, toastStatus: "error", toastText: `请填写${findSelector(this.state.action).action}数值`, })
       return
     }
     db.collection("tests").add({
@@ -122,20 +122,6 @@ export default class Record extends Component<{}, PageState> {
 
   // custom funcs
 
-  selector = [
-    { name: "自行车", action: "骑行", value: 100, unit: "公里" },
-    { name: "公交/地铁", action: "乘坐", value: 200, unit: "公里" },
-    { name: "电动自行车", action: "行驶", value: 300, unit: "公里" },
-    { name: "电量", action: "使用", value: 400, unit: "度" },
-    { name: "燃气", action: "使用", value: 500, unit: "m³" },
-    { name: "汽油", action: "使用", value: 600, unit: "升" },
-    { name: "电动汽车", action: "行驶", value: 700, unit: "公里" },
-    { name: "燃油汽车", action: "行驶", value: 800, unit: "公里" },
-  ]
-  foundSelector = (value: number): any => {
-    return this.selector.find(element => element.value == value);
-  }
-
   render() {
     return (
       <View className='record'>
@@ -168,11 +154,11 @@ export default class Record extends Component<{}, PageState> {
             />
 
             <AtDivider lineColor="#f7f7f7" height="26"></AtDivider>
-            <Picker mode='selector' rangeKey="name" range={this.selector} onChange={this.changeAction}>
+            <Picker mode='selector' rangeKey="name" range={selector} onChange={this.changeAction}>
               <AtList>
                 <AtListItem
                   title='类型'
-                  extraText={this.foundSelector(this.state.action)?.name}
+                  extraText={findSelector(this.state.action)?.name}
                 />
               </AtList>
             </Picker>
@@ -180,13 +166,13 @@ export default class Record extends Component<{}, PageState> {
             <AtInput
               clear
               name='value'
-              title={this.foundSelector(this.state.action)?.action}
+              title={findSelector(this.state.action)?.action}
               type='digit'
               placeholder='请输入数字'
               value={this.state.value.toString() || ""}
               onChange={(v: number) => { this.setState({ value: v }) }}
             >
-              <Text className="unit">{this.foundSelector(this.state.action)?.unit}</Text>
+              <Text className="unit">{findSelector(this.state.action)?.unit}</Text>
             </AtInput>
 
             <AtInput
