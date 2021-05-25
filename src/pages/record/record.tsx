@@ -2,7 +2,17 @@ import { Component } from 'react'
 import { View, Text, Picker } from '@tarojs/components'
 import Taro, { getCurrentInstance } from "@tarojs/taro";
 import Auth from "../../components/Auth/Auth";
-import { AtDivider, AtForm, AtInput, AtButton, AtList, AtListItem, AtSegmentedControl } from 'taro-ui'
+import {
+  AtDivider,
+  AtForm,
+  AtInput,
+  AtButton,
+  AtList,
+  AtListItem,
+  AtSegmentedControl,
+  AtToast,
+  AtCurtain,
+} from 'taro-ui'
 import { getData } from "../../global";
 
 import './record.scss'
@@ -13,12 +23,15 @@ type PageState = {
   action: number,
   note: string
   value: number
-  start_date?: Date,
-  end_date?: Date,
+  start_date: Date,
+  end_date: Date,
+  toastText?: string,
+  toastIsOpened: boolean,
+  toastStatus?: "success" | "loading" | "error" | undefined,
 }
 
 const db = wx.cloud.database()
-const _ = db.command
+// const _ = db.command
 export default class Record extends Component<{}, PageState> {
   constructor(props) {
     super(props)
@@ -30,6 +43,7 @@ export default class Record extends Component<{}, PageState> {
       note: "",
       start_date: new Date(),
       end_date: new Date(),
+      toastIsOpened: false,
     }
   }
 
@@ -60,24 +74,51 @@ export default class Record extends Component<{}, PageState> {
 
   componentDidHide() { }
 
-  add = (value: number) => {
-    console.log("add")
-    db.collection("tests").add({
-      data: {
-        name: "xxx",
-        value: _.inc(value)
-      }
-    })
-  }
-
   changeAction = (event) => {
     let value = this.selector[event.detail.value]?.value;
     this.setState({ action: value });
-    console.log("changeAction", value, event, this.state);
   }
 
-  onSubmit() { }
-  onReset() { }
+  onSubmit = () => {
+    this.setState({ toastIsOpened: true, toastStatus: "loading", toastText: "保存中..." })
+    let s = this.state
+    if (s.value <= 0) {
+      this.setState({ toastIsOpened: true, toastStatus: "error", toastText: `请填写${this.foundSelector(this.state.action).action}数值`, })
+      return
+    }
+    db.collection("tests").add({
+      data: {
+        group: s.group,
+        action: s.action,
+        note: s.note,
+        value: s.value,
+        start_date: s.start_date,
+        end_date: s.end_date,
+        days: (s.end_date.getUTCSeconds() - s.start_date.getUTCSeconds()) / (1000 * 60 * 60 * 24) + 1,
+        crated_at: new Date(),
+        updated_at: new Date(),
+      }
+    }).then((resp) => {
+      this.onReset()
+      this.setState({ toastIsOpened: true, toastStatus: "success", toastText: "保存成功", })
+      console.log("save ok", resp)
+    }).catch((err) => {
+      this.setState({ toastIsOpened: true, toastStatus: "error", toastText: "报错失败，错误信息：" + err, })
+      console.error("save db failed:", err)
+    })
+  }
+  onReset = () => {
+    this.setState({ group: 0 })
+    this.setState({ action: 100 })
+    this.setState({ note: "" })
+  }
+
+  onClose = (event: any): any => {
+    this.setState({
+      toastIsOpened: false
+    })
+    return event
+  }
 
   // custom funcs
 
@@ -105,8 +146,21 @@ export default class Record extends Component<{}, PageState> {
         }
 
         <Auth debug={this.state.pageParams["debug"]}>
-          <AtForm onSubmit={this.onSubmit.bind(this)}
-            onReset={this.onReset.bind(this)}>
+          <AtCurtain
+            closeBtnPosition="top-right"
+            isOpened={this.state.toastIsOpened}
+            onClose={(e) => this.onClose(e)}
+          >
+            <AtToast
+              duration={0}
+              onClose={(e) => this.onClose(e)}
+              isOpened={this.state.toastIsOpened}
+              status={this.state.toastStatus}
+              text={this.state.toastText}
+            ></AtToast>
+          </AtCurtain>
+
+          <AtForm>
             <AtSegmentedControl
               values={['个人', '家庭']}
               onClick={idx => { this.setState({ group: idx }) }}
@@ -129,8 +183,8 @@ export default class Record extends Component<{}, PageState> {
               title={this.foundSelector(this.state.action)?.action}
               type='digit'
               placeholder='请输入数字'
-              value=""
-              onChange={_ => { }}
+              value={this.state.value.toString() || ""}
+              onChange={(v: number) => { this.setState({ value: v }) }}
             >
               <Text className="unit">{this.foundSelector(this.state.action)?.unit}</Text>
             </AtInput>
@@ -156,9 +210,9 @@ export default class Record extends Component<{}, PageState> {
             </Picker>
 
             <AtDivider lineColor="#f7f7f7"></AtDivider>
-            <AtButton formType='submit' className="save">保存</AtButton>
+            <AtButton formType='submit' className="save" onClick={this.onSubmit}>保存</AtButton>
             <AtDivider lineColor="#f7f7f7" height="16"></AtDivider>
-            <AtButton formType='reset'>重置</AtButton>
+            <AtButton formType='reset' onClick={this.onReset}>重置</AtButton>
 
           </AtForm>
         </Auth>
