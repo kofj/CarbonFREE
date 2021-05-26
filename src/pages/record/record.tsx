@@ -21,6 +21,7 @@ type PageState = {
   pageParams?: any,
   group?: number,
   action: number,
+  effect: 0 | 1,// 减排/排放
   note: string
   value: number
   start_date: Date,
@@ -41,6 +42,7 @@ export default class Record extends Component<{}, PageState> {
       pageParams: getCurrentInstance()?.router?.params,
       group: 0,
       action: 100,
+      effect: 0,
       value: 0,
       note: "",
       start_date: now,
@@ -79,8 +81,11 @@ export default class Record extends Component<{}, PageState> {
 
   // custom funcs
   changeAction = (event) => {
-    let value = carbonTable[event.detail.value]?.value;
-    this.setState({ action: value });
+    let tab = carbonTable[event.detail.value]
+    this.setState({
+      action: tab?.value,
+      effect: (tab?.effect == "排放" ? 1 : 0)
+    });
   }
 
   onSubmit = () => {
@@ -95,11 +100,12 @@ export default class Record extends Component<{}, PageState> {
         group: s.group,
         action: s.action,
         note: s.note,
-        value: s.value,
+        value: parseInt(`${s.value}`),
+        effect: s.action > 300,
         start_date: s.start_date,
         end_date: s.end_date,
         days: s.days,
-        carbon: s.days * s.value * findCarbonTab(s.action).carbon,
+        carbon: s.value * findCarbonTab(s.action).carbon,
         crated_at: new Date(),
         updated_at: new Date(),
       }

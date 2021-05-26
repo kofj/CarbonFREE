@@ -15,7 +15,7 @@ import { UserState } from "../../constants/types";
 import { update_userinfo } from "../../actions/user";
 import { Card } from "../../components/Card/card";
 import Auth from "../../components/Auth/Auth";
-import { $record, setData, carbonTable, findCarbonTab, formatCarbon, formatYmD } from "../../global";
+import { $record, setData, carbonTable, findCarbonTab, formatCarbon, formatYmD, $db, $c } from "../../global";
 
 import './index.scss'
 
@@ -29,6 +29,8 @@ type PageState = {
   pageParams?: any,
   list: Record<string, any>,
   showActivity: boolean,
+  addCarbon: number,
+  decCarbon: number,
 }
 
 class Index extends Component<PageStateProps, PageState> {
@@ -38,6 +40,8 @@ class Index extends Component<PageStateProps, PageState> {
       pageParams: getCurrentInstance()?.router?.params,
       list: {},
       showActivity: false,
+      addCarbon: 0,
+      decCarbon: 0,
     }
   }
 
@@ -49,6 +53,47 @@ class Index extends Component<PageStateProps, PageState> {
   componentWillUnmount() { }
 
   componentDidShow() {
+    $record.where({
+      _openid: '{openid}',
+      effect: 0,
+    })
+      .field({
+        days: true,
+        carbon: true,
+      })
+      .get({
+        success: (res) => {
+          console.log(res.data)
+          let carbon = 0
+          res.data.forEach(element => {
+            carbon += element.carbon
+          });
+          console.log("减排", carbon)
+          this.setState({ decCarbon: carbon })
+        },
+        fail: console.error
+      })
+
+    $record.where({
+      _openid: '{openid}',
+      effect: 1,
+    })
+      .field({
+        days: true,
+        carbon: true,
+      })
+      .get({
+        success: (res) => {
+          console.log(res.data)
+          let carbon = 0
+          res.data.forEach(element => {
+            carbon += element.carbon
+          });
+          console.log("排", carbon)
+          this.setState({ addCarbon: carbon })
+        },
+        fail: console.error
+      })
   }
 
   componentDidHide() { }
@@ -147,6 +192,10 @@ class Index extends Component<PageStateProps, PageState> {
             </View>
 
             <AtDivider lineColor="#f7f7f7" height="16"></AtDivider>
+            <View className="carboninfo">
+              我累计记录: 排放{formatCarbon(this.state.addCarbon)}, 减排 {formatCarbon(this.state.decCarbon)},
+            </View>
+            <AtDivider lineColor="#f7f7f7" height="16"></AtDivider>
 
             <Card title="快捷记录">
               <View className="shortcut">
@@ -194,7 +243,6 @@ class Index extends Component<PageStateProps, PageState> {
               >
                 <AtList>
                   {carbonTable.map((v, k): any => {
-                    console.log("计算规则", v, v)
                     let actionClass = "good-action"
                     if (v.effect == "排放") actionClass = "bad-action"
 
