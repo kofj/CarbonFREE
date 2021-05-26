@@ -1,5 +1,5 @@
 import { Component } from 'react'
-import { View, Text, Picker } from '@tarojs/components'
+import { View, Text, Picker, Input } from '@tarojs/components'
 import Taro, { getCurrentInstance } from "@tarojs/taro";
 import Auth from "../../components/Auth/Auth";
 import {
@@ -12,8 +12,9 @@ import {
   AtSegmentedControl,
   AtToast,
   AtCurtain,
+  AtCalendar,
 } from 'taro-ui'
-import { getData, findCarbonTab, carbonTable, formatYmD } from "../../global";
+import { getData, findCarbonTab, carbonTable, formatYmD, $record } from "../../global";
 
 import './record.scss'
 
@@ -30,8 +31,6 @@ type PageState = {
   toastStatus?: "success" | "loading" | "error" | undefined,
   days: number,
 }
-
-const db = wx.cloud.database()
 export default class Record extends Component<{}, PageState> {
   constructor(props) {
     super(props)
@@ -64,13 +63,10 @@ export default class Record extends Component<{}, PageState> {
 
   componentDidShow() {
     let group = getData("shortcut_group")
-    console.log("getData shorcut.group", group)
     if (group) this.setState({ group: group })
     let action = getData("shortcut_action")
-    console.log("getData shorcut.action", action)
     if (action) this.setState({ action: action })
     let note = getData("shortcut_note")
-    console.log("getData shorcut.note", note)
     if (note) this.setState({ note: note })
   }
 
@@ -91,7 +87,7 @@ export default class Record extends Component<{}, PageState> {
       this.setState({ toastIsOpened: true, toastStatus: "error", toastText: `请填写${findCarbonTab(this.state.action).action}数值`, })
       return
     }
-    db.collection("tests").add({
+    $record.add({
       data: {
         group: s.group,
         action: s.action,
@@ -132,7 +128,20 @@ export default class Record extends Component<{}, PageState> {
     this.setState({ days: days })
   }
 
+  onSelectDate = (data: any) => {
+    const start = new Date(data.value.start)
+    if (!!!data.value.end) {
+      this.setState({ start_date: start, end_date: start })
+      this.setState({ days: 1 })
+      return
+    }
+    const end = new Date(data.value.end)
+    this.setState({ start_date: start, end_date: end })
+    this.calcDays(start, end)
+  }
+
   render() {
+    const value = this.state.value > 0 ? `${this.state.value}` : ""
     return (
       <View className='record'>
         {this.state.pageParams["debug"] &&
@@ -172,14 +181,14 @@ export default class Record extends Component<{}, PageState> {
                 />
               </AtList>
             </Picker>
-
             <AtInput
-              clear
+              holdKeyboard={true}
+              maxlength={4}
               name='value'
               title={findCarbonTab(this.state.action)?.action}
               type='digit'
               placeholder='请输入数字'
-              value={this.state.value.toString() || ""}
+              value={value}
               onChange={(v: number) => { this.setState({ value: v }) }}
             >
               <Text className="unit">{findCarbonTab(this.state.action)?.unit}</Text>
@@ -193,25 +202,10 @@ export default class Record extends Component<{}, PageState> {
               value={this.state.note}
               onChange={_ => { }}
             />
-
-            <Picker mode='date' value="" end={this.state.end_date?.toLocaleDateString()} onChange={e => {
-              let date = new Date(e.detail.value)
-              this.setState({ start_date: date })
-              this.calcDays(date, this.state.end_date)
-            }}>
-              <AtList>
-                <AtListItem title='开始日期' extraText={formatYmD(this.state.start_date)} />
-              </AtList>
-            </Picker>
-            <Picker mode='date' value="" start={this.state.start_date?.toLocaleDateString()} end={new Date().toLocaleDateString()} onChange={e => {
-              let date = new Date(e.detail.value)
-              this.setState({ end_date: date })
-              this.calcDays(this.state.start_date, date)
-            }}>
-              <AtList>
-                <AtListItem title="截止日期" extraText={formatYmD(this.state.end_date)} />
-              </AtList>
-            </Picker>
+            <AtCalendar isMultiSelect={true}
+              maxDate={formatYmD(new Date())}
+              onSelectDate={this.onSelectDate}
+            />
 
             <AtDivider lineColor="#f7f7f7"></AtDivider>
             <AtButton formType='submit' className="save" onClick={this.onSubmit}>保存</AtButton>

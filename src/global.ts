@@ -1,8 +1,8 @@
 const globalData = {}
 
-console.log("数据库", process.env.NODE_ENV, process.env.RECORDTAB)
 let collection = process.env.RECORDTAB
 if (!collection) collection = "tests"
+console.log("数据库", process.env.NODE_ENV, process.env.RECORDTAB, collection)
 export const $db = wx.cloud.database()
 export const $c = $db.command
 export const $record = $db.collection(collection)
