@@ -1,8 +1,11 @@
 const globalData = {}
 
+console.log("数据库", process.env.NODE_ENV, process.env.RECORDTAB)
+let collection = process.env.RECORDTAB
+if (!collection) collection = "tests"
 export const $db = wx.cloud.database()
 export const $c = $db.command
-export const $record = $db.collection("tests")
+export const $record = $db.collection(collection)
 
 export function setData(key: string, val: any) {
   globalData[key] = val

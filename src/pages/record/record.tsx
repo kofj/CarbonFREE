@@ -21,7 +21,6 @@ type PageState = {
   pageParams?: any,
   group?: number,
   action: number,
-  effect: 0 | 1,// 减排/排放
   note: string
   value: number
   start_date: Date,
@@ -33,7 +32,6 @@ type PageState = {
 }
 
 const db = wx.cloud.database()
-// const _ = db.command
 export default class Record extends Component<{}, PageState> {
   constructor(props) {
     super(props)
@@ -42,7 +40,6 @@ export default class Record extends Component<{}, PageState> {
       pageParams: getCurrentInstance()?.router?.params,
       group: 0,
       action: 100,
-      effect: 0,
       value: 0,
       note: "",
       start_date: now,
@@ -84,7 +81,6 @@ export default class Record extends Component<{}, PageState> {
     let tab = carbonTable[event.detail.value]
     this.setState({
       action: tab?.value,
-      effect: (tab?.effect == "排放" ? 1 : 0)
     });
   }
 
@@ -101,7 +97,7 @@ export default class Record extends Component<{}, PageState> {
         action: s.action,
         note: s.note,
         value: parseInt(`${s.value}`),
-        effect: s.action > 300,
+        effect: s.action > 300, // false 减排/true 排放
         start_date: s.start_date,
         end_date: s.end_date,
         days: s.days,
@@ -152,7 +148,7 @@ export default class Record extends Component<{}, PageState> {
             onClose={(e) => this.onClose(e)}
           >
             <AtToast
-              duration={0}
+              duration={9000}
               onClose={(e) => this.onClose(e)}
               isOpened={this.state.toastIsOpened}
               status={this.state.toastStatus}

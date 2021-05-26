@@ -12,10 +12,10 @@ import {
 } from "taro-ui"
 
 import { UserState } from "../../constants/types";
-import { update_userinfo } from "../../actions/user";
+import { update_userinfo, update_auth_tips } from "../../actions/user";
 import { Card } from "../../components/Card/card";
 import Auth from "../../components/Auth/Auth";
-import { $record, setData, carbonTable, findCarbonTab, formatCarbon, formatYmD, $db, $c } from "../../global";
+import { $record, setData, carbonTable, findCarbonTab, formatCarbon, formatYmD } from "../../global";
 
 import './index.scss'
 
@@ -23,6 +23,7 @@ import './index.scss'
 type PageStateProps = {
   user: UserState,
   update_userinfo(user: UserState): void,
+  update_auth_tips(msg: string): void,
 }
 
 type PageState = {
@@ -53,9 +54,10 @@ class Index extends Component<PageStateProps, PageState> {
   componentWillUnmount() { }
 
   componentDidShow() {
+    this.props.update_auth_tips("立即登录——开始记录你的碳足迹")
     $record.where({
       _openid: '{openid}',
-      effect: 0,
+      effect: false,
     })
       .field({
         days: true,
@@ -76,7 +78,7 @@ class Index extends Component<PageStateProps, PageState> {
 
     $record.where({
       _openid: '{openid}',
-      effect: 1,
+      effect: true,
     })
       .field({
         days: true,
@@ -233,33 +235,34 @@ class Index extends Component<PageStateProps, PageState> {
                 </View>
               </AtCard>
             </View >
-            <AtDivider lineColor="#f7f7f7" height="12"></AtDivider>
-
-            <View>
-              <AtCard
-                // note='累计碳排放 999 Kg'
-                // extra='额外信息'
-                title='计算规则'
-              >
-                <AtList>
-                  {carbonTable.map((v, k): any => {
-                    let actionClass = "good-action"
-                    if (v.effect == "排放") actionClass = "bad-action"
-
-                    return (
-                      <AtListItem
-                        className={actionClass}
-                        title={`${k} ${v.action}  ${v.name}`}
-                        note={`每${v.unit}${v.effect} ${v.carbon}克碳`}
-                      />)
-                  })}
-                </AtList>
-              </AtCard>
-              <AtDivider lineColor="#f7f7f7" height="20"></AtDivider>
-            </View>
 
           </View>
         </Auth>
+
+        <AtDivider lineColor="#f7f7f7" height="12"></AtDivider>
+
+        <View>
+          <AtCard
+            // note='累计碳排放 999 Kg'
+            // extra='登录后可以记录碳足迹'
+            title='计算规则'
+          >
+            <AtList>
+              {carbonTable.map((v, k): any => {
+                let actionClass = "good-action"
+                if (v.effect == "排放") actionClass = "bad-action"
+
+                return (
+                  <AtListItem
+                    className={actionClass}
+                    title={`${k} ${v.action}  ${v.name}`}
+                    note={`每${v.unit}${v.effect} ${v.carbon}克碳`}
+                  />)
+              })}
+            </AtList>
+          </AtCard>
+          <AtDivider lineColor="#f7f7f7" height="20"></AtDivider>
+        </View>
 
       </View >
     )
@@ -275,6 +278,9 @@ export default connect(
   (dispatch) => ({
     update_userinfo(userState: UserState) {
       dispatch(update_userinfo(userState))
+    },
+    update_auth_tips(msg: string) {
+      dispatch(update_auth_tips(msg))
     },
   })
 )(Index)

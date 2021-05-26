@@ -14,9 +14,14 @@ type AppProps = {
 class App extends Component<AppProps> {
 
   componentWillMount() {
+    wx.cloud.init()
     wx.login().then((resp) => {
       console.log("wx.login", resp)
-
+    })
+    wx.cloud.callFunction({
+      name: "getUserInfo",
+    }).then((resp) => {
+      console.log("tcb.getUserInfo", resp)
     })
   }
 

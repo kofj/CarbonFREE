@@ -11,7 +11,6 @@ const store = configStore();
 export default class App extends Component {
 
   componentDidMount() {
-    Taro.cloud.init()
   }
 
   componentDidShow() { }

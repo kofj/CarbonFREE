@@ -10,7 +10,7 @@ import {
   AtList,
   AtListItem,
 } from "taro-ui"
-import { $record, $c, findCarbonTab, formatCarbon, formatYmD } from "../../global";
+import { $record, findCarbonTab, formatCarbon, formatYmD } from "../../global";
 import ActivityIndicator from "../../components/ActivityIndicator/index";
 
 import './mine.scss'
