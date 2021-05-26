@@ -78,6 +78,24 @@ class Index extends Component<PageStateProps, PageState> {
       })
   }
 
+  onShareTimeline() {
+    const info = {
+      title: `保护家园，从我做起。${this.props.user.userInfo?.nickName}真诚邀请你节能减排，使用【碳迹】记录碳足迹`,
+      query: `uid=${this.props.user.openId}`
+    }
+    console.log('onShareTimeline', info)
+    return info
+  }
+
+  onShareAppMessage(res) {
+    const info = {
+      title: `保护家园，从我做起。${this.props.user.userInfo?.nickName}真诚邀请你节能减排，使用【碳迹】记录碳足迹`,
+      path: `/pages/index/index?uid=${this.props.user.openId}`
+    }
+    console.log("onShareAppMessage", info, res)
+    return info
+  }
+
   // custom funcs
   shortcut(idx: number, _: any): any {
     // wx.switchTab 不能传递 queryString，通过 globalData 传递
