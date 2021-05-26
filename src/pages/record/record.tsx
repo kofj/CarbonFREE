@@ -13,7 +13,7 @@ import {
   AtToast,
   AtCurtain,
 } from 'taro-ui'
-import { getData, findSelector, selector, formatYmD } from "../../global";
+import { getData, findCarbonTab, carbonTable, formatYmD } from "../../global";
 
 import './record.scss'
 
@@ -28,6 +28,7 @@ type PageState = {
   toastText?: string,
   toastIsOpened: boolean,
   toastStatus?: "success" | "loading" | "error" | undefined,
+  days: number,
 }
 
 const db = wx.cloud.database()
@@ -35,15 +36,17 @@ const db = wx.cloud.database()
 export default class Record extends Component<{}, PageState> {
   constructor(props) {
     super(props)
+    let now = new Date(formatYmD(new Date()))
     this.state = {
       pageParams: getCurrentInstance()?.router?.params,
       group: 0,
       action: 100,
       value: 0,
       note: "",
-      start_date: new Date(),
-      end_date: new Date(),
+      start_date: now,
+      end_date: now,
       toastIsOpened: false,
+      days: 1,
     }
   }
 
@@ -74,8 +77,9 @@ export default class Record extends Component<{}, PageState> {
 
   componentDidHide() { }
 
+  // custom funcs
   changeAction = (event) => {
-    let value = selector[event.detail.value]?.value;
+    let value = carbonTable[event.detail.value]?.value;
     this.setState({ action: value });
   }
 
@@ -83,7 +87,7 @@ export default class Record extends Component<{}, PageState> {
     this.setState({ toastIsOpened: true, toastStatus: "loading", toastText: "保存中..." })
     let s = this.state
     if (s.value <= 0) {
-      this.setState({ toastIsOpened: true, toastStatus: "error", toastText: `请填写${findSelector(this.state.action).action}数值`, })
+      this.setState({ toastIsOpened: true, toastStatus: "error", toastText: `请填写${findCarbonTab(this.state.action).action}数值`, })
       return
     }
     db.collection("tests").add({
@@ -94,7 +98,8 @@ export default class Record extends Component<{}, PageState> {
         value: s.value,
         start_date: s.start_date,
         end_date: s.end_date,
-        days: (s.end_date.getUTCSeconds() - s.start_date.getUTCSeconds()) / (1000 * 60 * 60 * 24) + 1,
+        days: s.days,
+        carbon: s.days * s.value * findCarbonTab(s.action).carbon,
         crated_at: new Date(),
         updated_at: new Date(),
       }
@@ -120,7 +125,10 @@ export default class Record extends Component<{}, PageState> {
     return event
   }
 
-  // custom funcs
+  calcDays(start: Date, end: Date) {
+    let days = Math.round((end.getTime() - start.getTime()) / 86400000) + 1
+    this.setState({ days: days })
+  }
 
   render() {
     return (
@@ -154,11 +162,11 @@ export default class Record extends Component<{}, PageState> {
             />
 
             <AtDivider lineColor="#f7f7f7" height="26"></AtDivider>
-            <Picker mode='selector' rangeKey="name" range={selector} onChange={this.changeAction}>
+            <Picker mode='selector' rangeKey="name" range={carbonTable} onChange={this.changeAction}>
               <AtList>
                 <AtListItem
                   title='类型'
-                  extraText={findSelector(this.state.action)?.name}
+                  extraText={findCarbonTab(this.state.action)?.name}
                 />
               </AtList>
             </Picker>
@@ -166,13 +174,13 @@ export default class Record extends Component<{}, PageState> {
             <AtInput
               clear
               name='value'
-              title={findSelector(this.state.action)?.action}
+              title={findCarbonTab(this.state.action)?.action}
               type='digit'
               placeholder='请输入数字'
               value={this.state.value.toString() || ""}
               onChange={(v: number) => { this.setState({ value: v }) }}
             >
-              <Text className="unit">{findSelector(this.state.action)?.unit}</Text>
+              <Text className="unit">{findCarbonTab(this.state.action)?.unit}</Text>
             </AtInput>
 
             <AtInput
@@ -184,12 +192,20 @@ export default class Record extends Component<{}, PageState> {
               onChange={_ => { }}
             />
 
-            <Picker mode='date' value="" end={this.state.end_date?.toLocaleDateString()} onChange={e => { this.setState({ start_date: new Date(e.detail.value) }) }}>
+            <Picker mode='date' value="" end={this.state.end_date?.toLocaleDateString()} onChange={e => {
+              let date = new Date(e.detail.value)
+              this.setState({ start_date: date })
+              this.calcDays(date, this.state.end_date)
+            }}>
               <AtList>
                 <AtListItem title='开始日期' extraText={formatYmD(this.state.start_date)} />
               </AtList>
             </Picker>
-            <Picker mode='date' value="" start={this.state.start_date?.toLocaleDateString()} end={new Date().toLocaleDateString()} onChange={e => { this.setState({ end_date: new Date(e.detail.value) }) }}>
+            <Picker mode='date' value="" start={this.state.start_date?.toLocaleDateString()} end={new Date().toLocaleDateString()} onChange={e => {
+              let date = new Date(e.detail.value)
+              this.setState({ end_date: date })
+              this.calcDays(this.state.start_date, date)
+            }}>
               <AtList>
                 <AtListItem title="截止日期" extraText={formatYmD(this.state.end_date)} />
               </AtList>

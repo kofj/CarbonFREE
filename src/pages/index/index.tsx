@@ -1,7 +1,7 @@
 import { Component, } from 'react'
 import { connect } from 'react-redux'
 import Taro, { getCurrentInstance } from "@tarojs/taro";
-import { View, Button, Text } from '@tarojs/components'
+import { View, Text } from '@tarojs/components'
 import {
   AtDivider,
   AtCard,
@@ -9,25 +9,20 @@ import {
   AtListItem,
   AtAvatar,
   AtButton,
-  AtActivityIndicator,
 } from "taro-ui"
 
-import { add, minus } from '../../actions/counter'
-import { Counter, UserState } from "../../constants/types";
+import { UserState } from "../../constants/types";
 import { update_userinfo } from "../../actions/user";
 import { Card } from "../../components/Card/card";
 import Auth from "../../components/Auth/Auth";
-import { setData, findSelector, formatCarbon, formatYmD } from "../../global";
+import { $record, setData, carbonTable, findCarbonTab, formatCarbon, formatYmD } from "../../global";
 
 import './index.scss'
 
 
 type PageStateProps = {
-  counter: Counter,
   user: UserState,
   update_userinfo(user: UserState): void,
-  add: () => void,
-  dec: () => void,
 }
 
 type PageState = {
@@ -45,7 +40,6 @@ class Index extends Component<PageStateProps, PageState> {
       showActivity: false,
     }
   }
-  db = wx.cloud.database()
 
   componentWillReceiveProps(nextProps) {
     console.log(this.props, nextProps);
@@ -60,13 +54,13 @@ class Index extends Component<PageStateProps, PageState> {
   componentDidHide() { }
 
   componentDidMount() {
-    const $ = this
-    this.db.collection('tests')
-      // 按 progress 降序
+    let $ = this
+    $record
+      // 按 start_date 降序
       .orderBy('start_date', 'desc')
       .orderBy('days', 'desc')
       // 取按 orderBy 排序之后的前 10 个
-      .limit(10)
+      .limit(5)
       // 筛选语句
       .where({
         // 填入当前用户 openid，或如果使用了安全规则，则 {openid} 即代表当前用户 openid
@@ -121,14 +115,6 @@ class Index extends Component<PageStateProps, PageState> {
     this.setState({ showActivity: true })
   }
 
-  ActivityIndicator() {
-    return (
-      <View style={{ display: 'flex', justifyContent: 'center', paddingTop: '30rpx', paddingBottom: '30rpx' }}>
-        <AtActivityIndicator></AtActivityIndicator>
-      </View>
-    );
-  }
-
   render() {
     return (
       <View className='index' >
@@ -154,38 +140,59 @@ class Index extends Component<PageStateProps, PageState> {
 
             <View>
               <AtCard
-                note='累计碳排放 999 Kg'
-                extra='额外信息'
-                title='本月记录'
+                // note='累计碳排放 999 Kg'
+                extra='查看更多'
+                title='最近记录'
+                onClick={_ => { wx.switchTab({ url: "../mine/mine" }) }}
               >
-                <Text>用户昵称：{this.props.user.userInfo?.nickName}</Text>
-                <Button onClick={this.props.add}>{this.props.counter.num}</Button>
+                <View>
+                  <AtList>
+                    {Object.entries(this.state.list).map((key): any => {
+                      let s = findCarbonTab(key[1].action)
+                      let actionClass = "good-action"
+                      if (s.effect == "排放") actionClass = "bad-action"
+                      return (
+                        <View>
+                          <AtListItem
+                            className={actionClass}
+                            title={`${s.action} ${key[1].value} ${s.unit}${s.name}`}
+                            extraText={`${s.effect}${formatCarbon(s.carbon * key[1].value)}`}
+                            note={`自${formatYmD(key[1].start_date)}, ${key[1].days >>> 0}天`}
+                          />
+                        </View>)
+                    })
+                    }
+                  </AtList>
+                </View>
               </AtCard>
             </View >
             <AtDivider lineColor="#f7f7f7" height="12"></AtDivider>
+
             <View>
-              <AtList>
-                {Object.entries(this.state.list).map((key): any => {
-                  let s = findSelector(key[1].action)
-                  let actionClass = "good-action"
-                  if (s.effect == "排放") actionClass = "bad-action"
-                  console.log(key[0], key[1].days >>> 0, s)
-                  return (
-                    <View>
+              <AtCard
+                // note='累计碳排放 999 Kg'
+                // extra='额外信息'
+                title='计算规则'
+              >
+                <AtList>
+                  {carbonTable.map((v, k): any => {
+                    console.log("计算规则", v, v)
+                    let actionClass = "good-action"
+                    if (v.effect == "排放") actionClass = "bad-action"
+
+                    return (
                       <AtListItem
                         className={actionClass}
-                        title={`${s.action} ${key[1].value} ${s.unit}${s.name}`}
-                        extraText={`${s.effect}${formatCarbon(s.carbon * key[1].value)}`}
-                        note={`自${formatYmD(key[1].start_date)}, ${key[1].days >>> 0}天`}
-                      />
-                    </View>)
-                })
-                }
-              </AtList>
+                        title={`${k} ${v.action}  ${v.name}`}
+                        note={`每${v.unit}${v.effect} ${v.carbon}克碳`}
+                      />)
+                  })}
+                </AtList>
+              </AtCard>
+              <AtDivider lineColor="#f7f7f7" height="20"></AtDivider>
             </View>
-          </View>
 
-          <this.ActivityIndicator></this.ActivityIndicator>
+          </View>
         </Auth>
 
       </View >
@@ -195,21 +202,13 @@ class Index extends Component<PageStateProps, PageState> {
 
 export default connect(
   (state: {
-    counter: Counter,
     user: UserState,
   }) => ({
-    counter: state.counter,
     user: state.user,
   }),
   (dispatch) => ({
     update_userinfo(userState: UserState) {
       dispatch(update_userinfo(userState))
     },
-    add() {
-      dispatch(add())
-    },
-    dec() {
-      dispatch(minus())
-    }
   })
 )(Index)

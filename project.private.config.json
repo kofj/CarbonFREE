@@ -23,6 +23,18 @@
           "pathName": "pages/record/record",
           "query": "debug=true&shortcut=true&group=0&action=100&note=低碳骑行",
           "scene": null
+        },
+        {
+          "name": "记录-debug",
+          "pathName": "pages/record/record",
+          "query": "debug=true",
+          "scene": null
+        },
+        {
+          "name": "pages/mine/mine",
+          "pathName": "pages/mine/mine",
+          "query": "",
+          "scene": null
         }
       ]
     }
