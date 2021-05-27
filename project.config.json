@@ -41,6 +41,7 @@
   "compileType": "miniprogram",
   "simulatorType": "wechat",
   "simulatorPluginLibVersion": {},
-  "cloudbaseRoot": "cloudbase",
+  "cloudbaseRoot": "cloudbase/",
+  "cloudfunctionRoot": "cloudbase/carbon-free-1gzp5o087d63e0f3/functions",
   "condition": {}
 }

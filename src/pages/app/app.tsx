@@ -9,19 +9,22 @@ import { UserState } from 'src/constants/types';
 
 type AppProps = {
   user: UserState,
+  children?: any,
 }
 
 class App extends Component<AppProps> {
 
   componentWillMount() {
-    wx.cloud.init()
     wx.login().then((resp) => {
       console.log("wx.login", resp)
-    })
-    wx.cloud.callFunction({
-      name: "getUserInfo",
-    }).then((resp) => {
-      console.log("tcb.getUserInfo", resp)
+      // wx.cloud.callFunction({
+      //   name: "login",
+      //   data: {
+      //     code: resp.code
+      //   }
+      // }).then((resp) => {
+      //   console.log("tcb.login", resp)
+      // })
     })
   }
 
@@ -36,6 +39,7 @@ class App extends Component<AppProps> {
   render() {
     return (
       <View className='app'>
+        {this.props.children}
       </View>
     )
   }
@@ -45,5 +49,5 @@ export default connect(
   (state: { user: UserState }) => ({
     user: state.user,
   }),
-  // (dispatch) => ({})
+  // (dispatch) => ({ })
 )(App)

@@ -10,6 +10,15 @@ const store = configStore();
 
 export default class App extends Component {
 
+  componentWillMount() {
+    console.log("环境信息", process.env.NODE_ENV, process.env.TCBENV)
+    wx.cloud.init(
+      {
+        env: process.env.TCBENV,
+        traceUser: true,
+      }
+    )
+  }
   componentDidMount() {
   }
 
@@ -27,8 +36,9 @@ export default class App extends Component {
     return (
       <View>
         <Provider store={store}>
-          <AppContainer />
-          {this.props.children}
+          <AppContainer >
+            {this.props.children}
+          </AppContainer>
         </Provider >
       </View>
     )

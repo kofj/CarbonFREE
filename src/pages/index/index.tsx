@@ -176,13 +176,14 @@ class Index extends Component<PageStateProps, PageState> {
   }
 
   onReachBottom() {
-    console.log("到底了")
-    this.setState({ showActivity: true })
   }
 
   render() {
     return (
       <View className='index' >
+        {process.env.NODE_ENV != "production" &&
+          <View className="warninfo">非生产环境代码,严禁上线</View>
+        }
         {/* <View className="code">{JSON.stringify(this.state.list)}</View> */}
         <Auth debug={this.state.pageParams["debug"]}>
           <View>

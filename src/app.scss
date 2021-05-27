@@ -92,3 +92,13 @@ page {
 .usertips {
   margin-top: 30rpx;
 }
+
+.warninfo{
+  padding: 20rpx;
+  color: #ec6a6a;
+  background-color:aqua;
+  font-size: large;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
